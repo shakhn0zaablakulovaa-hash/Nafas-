@@ -1,0 +1,59 @@
+{
+  "entities": {
+    "users": {
+      "title": "User Profile",
+      "description": "Private user profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["user", "admin", "expert"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "role"]
+    },
+    "posts": {
+      "title": "Community Post",
+      "description": "Anonymous or expert posts in the community forum",
+      "type": "object",
+      "properties": {
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string", "enum": ["legal", "psychological", "support", "success"] },
+        "likesCount": { "type": "number" },
+        "repliesCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["authorId", "content", "category"]
+    },
+    "replies": {
+      "title": "Post Reply",
+      "description": "Replies to community posts",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["postId", "authorId", "content"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "users",
+      "description": "User profile data"
+    },
+    "/posts/{postId}": {
+      "schema": "posts",
+      "description": "Community forum posts"
+    },
+    "/posts/{postId}/replies/{replyId}": {
+      "schema": "replies",
+      "description": "Replies to a specific post"
+    }
+  }
+}
