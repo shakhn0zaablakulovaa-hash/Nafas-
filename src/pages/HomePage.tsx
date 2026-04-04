@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Wind, Heart, Users, ArrowRight, PlayCircle, MessageSquare } from 'lucide-react';
+import { Heart, Users, ArrowRight, PlayCircle, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Logo } from '../components/Logo';
 
 const PODCASTS = [
   { id: 'Qe0f9I4PZYE', title: 'Zo\'ravonlikka qarshi kurash', author: 'Nafas' },
@@ -55,12 +56,12 @@ export default function HomePage() {
 
       <section className="space-y-4">
         <div className="flex items-center gap-2 text-primary font-bold tracking-widest uppercase text-xs">
-          <Wind size={16} />
+          <Logo size={20} />
           <span>Xavfsiz hudud</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-bold text-on-surface leading-tight">
-          Bugun o'zingizni <br />
-          <span className="text-primary italic">qanday</span> his qilyapsiz?
+          Har nafasda <br />
+          <span className="text-primary italic">o'zingni</span> tanla
         </h1>
         <p className="text-on-surface-variant max-w-xl text-lg">
           Nafas - bu sizning sirdoshingiz. Biz har qanday vaziyatda sizni tinglashga va huquqiy yordam berishga tayyormiz.

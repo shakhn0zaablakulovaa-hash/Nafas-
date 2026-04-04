@@ -1,6 +1,6 @@
 {
   "name": "Nafas",
-  "description": "A secure sanctuary for women\u0027s legal and emotional resilience, featuring AI support, anonymous community, and emergency SOS tools.",
+  "description": "Har nafasda o'zingni tanla. A secure sanctuary for women's legal and emotional resilience, featuring AI support, anonymous community, and emergency SOS tools.",
   "requestFramePermissions": [
     "camera",
     "microphone",

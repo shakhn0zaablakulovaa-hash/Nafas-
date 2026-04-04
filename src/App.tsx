@@ -1,7 +1,8 @@
 import React from 'react';
 import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, MessageSquare, Users, GraduationCap, Gavel, ClipboardCheck, LogOut, User as UserIcon, PlayCircle, Wind, Phone, Scan, LayoutDashboard, ChevronRight, Gamepad2 } from 'lucide-react';
+import { Home, MessageSquare, Users, GraduationCap, Gavel, ClipboardCheck, LogOut, User as UserIcon, PlayCircle, Wind, Phone, Scan, LayoutDashboard, ChevronRight, Gamepad2, AlertTriangle } from 'lucide-react';
+import { Logo } from './components/Logo';
 import { useAuth } from './services/firebase';
 import SOSButton from './components/SOSButton';
 import { cn } from './lib/utils';
@@ -51,11 +52,11 @@ const LoginPage = () => {
       >
         <div className="p-8 space-y-8">
           <div className="text-center space-y-2">
-            <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Wind size={32} />
+            <div className="w-32 h-32 bg-primary/5 text-primary rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/10 overflow-hidden">
+              <Logo size={96} className="animate-pulse" />
             </div>
-            <h1 className="text-3xl font-bold text-on-surface">Nafas</h1>
-            <p className="text-on-surface-variant">Xavfsiz va maxfiy yordam platformasi</p>
+            <h1 className="text-4xl font-bold text-on-surface tracking-tight">Nafas</h1>
+            <p className="text-primary font-medium italic">Har nafasda o'zingni tanla</p>
           </div>
 
           <AnimatePresence mode="wait">
@@ -65,77 +66,37 @@ const LoginPage = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-4"
+                className="space-y-6"
               >
-                <p className="text-center font-bold text-on-surface-variant">Kim sifatida kirmoqchisiz?</p>
-                <div className="grid grid-cols-2 gap-4">
-                  <button 
-                    onClick={() => { setRole('user'); setStep(2); }}
-                    className="p-6 rounded-2xl border-2 border-primary/20 hover:border-primary hover:bg-primary/5 transition-all space-y-2 text-center group"
-                  >
-                    <Users className="mx-auto text-primary group-hover:scale-110 transition-transform" size={32} />
-                    <span className="block font-bold">Foydalanuvchi</span>
-                  </button>
-                  <button 
-                    onClick={() => { setRole('admin'); setStep(2); }}
-                    className="p-6 rounded-2xl border-2 border-secondary/20 hover:border-secondary hover:bg-secondary/5 transition-all space-y-2 text-center group"
-                  >
-                    <LayoutDashboard className="mx-auto text-secondary group-hover:scale-110 transition-transform" size={32} />
-                    <span className="block font-bold">Admin</span>
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
-            {step === 2 && (
-              <motion.div 
-                key="step2"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6 relative"
-              >
-                <div className="space-y-4">
-                  <p className="text-center font-bold text-on-surface-variant">Xavfsizlikni tasdiqlang</p>
-                  <div className="space-y-3">
+                <div className="text-center space-y-4">
+                  <p className="text-on-surface-variant">Xush kelibsiz! Platformadan foydalanish uchun rolni tanlang va davom eting.</p>
+                  <div className="grid grid-cols-1 gap-4">
                     <button 
-                      onClick={handleFaceID}
-                      className="w-full p-4 bg-surface-container-high rounded-2xl flex items-center gap-4 hover:bg-surface-container-highest transition-colors group"
+                      onClick={() => { setRole('user'); setStep(3); }}
+                      className="p-8 rounded-3xl border-2 border-primary/10 hover:border-primary hover:bg-primary/5 transition-all flex items-center gap-6 group text-left"
                     >
-                      <div className="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center">
-                        <Scan size={20} />
+                      <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Users size={32} />
                       </div>
-                      <div className="text-left">
-                        <span className="block font-bold">Face ID orqali</span>
-                        <span className="text-xs text-on-surface-variant">Faqat ayollar uchun identifikatsiya</span>
+                      <div>
+                        <span className="block font-black text-lg text-on-surface">Foydalanuvchi</span>
+                        <span className="text-xs text-on-surface-variant">Platformadan foydalanish va yordam olish</span>
                       </div>
-                      <ChevronRight className="ml-auto text-outline" size={20} />
                     </button>
-                    <button className="w-full p-4 bg-surface-container-high rounded-2xl flex items-center gap-4 hover:bg-surface-container-highest transition-colors group">
-                      <div className="w-10 h-10 bg-secondary/10 text-secondary rounded-full flex items-center justify-center">
-                        <Phone size={20} />
+                    <button 
+                      onClick={() => { setRole('admin'); setStep(3); }}
+                      className="p-8 rounded-3xl border-2 border-secondary/10 hover:border-secondary hover:bg-secondary/5 transition-all flex items-center gap-6 group text-left"
+                    >
+                      <div className="w-16 h-16 bg-secondary/10 text-secondary rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <LayoutDashboard size={32} />
                       </div>
-                      <div className="text-left">
-                        <span className="block font-bold">Telefon raqam orqali</span>
-                        <span className="text-xs text-on-surface-variant">SMS tasdiqlash bilan</span>
+                      <div>
+                        <span className="block font-black text-lg text-on-surface">Administrator</span>
+                        <span className="text-xs text-on-surface-variant">Statistika va tizim boshqaruvi</span>
                       </div>
-                      <ChevronRight className="ml-auto text-outline" size={20} />
                     </button>
                   </div>
                 </div>
-
-                {isScanning && (
-                  <div className="absolute inset-0 bg-white/90 flex flex-col items-center justify-center space-y-4 z-10 rounded-2xl">
-                    <div className="w-32 h-32 border-4 border-primary rounded-3xl relative overflow-hidden">
-                      <motion.div 
-                        animate={{ top: ['0%', '100%', '0%'] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="absolute left-0 right-0 h-1 bg-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]"
-                      />
-                    </div>
-                    <p className="font-bold text-primary animate-pulse">Yuzni skanerlash...</p>
-                  </div>
-                )}
               </motion.div>
             )}
 
@@ -174,13 +135,15 @@ const LoginPage = () => {
                 </div>
 
                 {!user ? (
-                  <button 
-                    onClick={signIn}
-                    disabled={isSigningIn}
-                    className="w-full py-4 bg-primary text-white rounded-2xl font-bold shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50"
-                  >
-                    {isSigningIn ? "Kirilmoqda..." : "Google orqali tasdiqlash"}
-                  </button>
+                  <div className="space-y-3">
+                    <button 
+                      onClick={signIn}
+                      disabled={isSigningIn}
+                      className="w-full py-4 bg-primary text-white rounded-2xl font-bold shadow-lg hover:scale-[1.02] transition-all disabled:opacity-50"
+                    >
+                      {isSigningIn ? "Kirilmoqda..." : "Platformaga kirish"}
+                    </button>
+                  </div>
                 ) : (
                   <button 
                     onClick={handleComplete}
@@ -219,25 +182,37 @@ function Layout({ children }: { children: React.ReactNode }) {
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/community', icon: Users, label: 'Taqdirlar' },
     { path: '/podcasts', icon: PlayCircle, label: 'Podkastlar' },
+    { path: '/chat', icon: MessageSquare, label: 'Chat (Moderatsiya)' },
   ];
 
   const navItems = isAdmin ? adminNavItems : userNavItems;
 
   return (
-    <div className="min-h-screen bg-surface-container-low pb-20 md:pb-0 md:pl-20">
+    <div className={cn(
+      "min-h-screen pb-20 md:pb-0 md:pl-20 transition-colors duration-500",
+      isAdmin ? "bg-[#fdf8fb]" : "bg-surface-container-low"
+    )}>
       {/* Desktop Sidebar */}
-      <nav className="hidden md:flex fixed left-0 top-0 bottom-0 w-20 bg-white border-r border-outline-variant/10 flex-col items-center py-8 space-y-8 z-50">
-        <div className="w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
-          <Wind size={24} />
+      <nav className={cn(
+        "hidden md:flex fixed left-0 top-0 bottom-0 w-20 border-r border-outline-variant/10 flex-col items-center py-8 space-y-8 z-50 transition-colors duration-500",
+        isAdmin ? "bg-white border-gray-100" : "bg-white"
+      )}>
+        <div className={cn(
+          "w-12 h-12 rounded-2xl flex items-center justify-center border transition-all",
+          isAdmin ? "bg-[#745286] text-white border-none" : "bg-primary/5 text-primary border-primary/10"
+        )}>
+          <Logo size={32} />
         </div>
-        <div className="flex-grow flex flex-col gap-4">
+        <div className="flex-grow flex flex-col gap-6 mt-8">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
               className={cn(
-                "p-3 rounded-xl transition-all group relative",
-                location.pathname === item.path ? "bg-primary/10 text-primary" : "text-on-surface-variant hover:bg-surface-container-high"
+                "p-3 rounded-xl transition-all group relative flex items-center justify-center",
+                location.pathname === item.path 
+                  ? (isAdmin ? "bg-[#f3e8f4] text-[#745286]" : "bg-primary/10 text-primary") 
+                  : (isAdmin ? "text-gray-400 hover:bg-gray-50" : "text-on-surface-variant hover:bg-surface-container-high")
               )}
             >
               <item.icon size={24} />
@@ -249,21 +224,29 @@ function Layout({ children }: { children: React.ReactNode }) {
         </div>
         <button 
           onClick={signOut}
-          className="p-3 text-on-surface-variant hover:bg-red-50 hover:text-red-500 rounded-xl transition-all"
+          className={cn(
+            "p-3 rounded-xl transition-all",
+            isAdmin ? "text-gray-400 hover:bg-red-50 hover:text-red-500" : "text-on-surface-variant hover:bg-red-50 hover:text-red-500"
+          )}
         >
           <LogOut size={24} />
         </button>
       </nav>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-outline-variant/10 px-4 py-3 flex justify-between items-center z-50">
+      <nav className={cn(
+        "md:hidden fixed bottom-0 left-0 right-0 border-t border-outline-variant/10 px-4 py-3 flex justify-between items-center z-50 transition-colors duration-500",
+        isAdmin ? "bg-white border-gray-100" : "bg-white"
+      )}>
         {navItems.slice(0, 5).map((item) => (
           <Link
             key={item.path}
             to={item.path}
             className={cn(
               "flex flex-col items-center gap-1 transition-all",
-              location.pathname === item.path ? "text-primary" : "text-on-surface-variant"
+              location.pathname === item.path 
+                ? "text-primary" 
+                : (isAdmin ? "text-gray-400" : "text-on-surface-variant")
             )}
           >
             <item.icon size={20} />
@@ -273,19 +256,43 @@ function Layout({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* Header */}
-      <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-outline-variant/10 px-6 py-4 flex justify-between items-center z-40">
+      <header className={cn(
+        "sticky top-0 backdrop-blur-md border-b border-outline-variant/10 px-6 py-4 flex justify-between items-center z-40 transition-colors duration-500",
+        isAdmin ? "bg-white/80 border-gray-100" : "bg-white/80"
+      )}>
         <div className="flex items-center gap-3">
-          <div className="md:hidden w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center">
-            <Wind size={18} />
+          <div className={cn(
+            "md:hidden w-10 h-10 rounded-lg flex items-center justify-center border",
+            isAdmin ? "bg-[#745286] text-white border-none" : "bg-primary/5 text-primary border-primary/10"
+          )}>
+            <Logo size={24} />
           </div>
-          <h1 className="font-bold text-xl text-on-surface">Nafas</h1>
+          <h1 className={cn(
+            "font-bold text-xl",
+            isAdmin ? "text-[#3c2a4d]" : "text-on-surface"
+          )}>Nafas</h1>
+          {profile?.uid?.startsWith('sim_') && (
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold animate-pulse">
+              <AlertTriangle size={12} />
+              Simulyatsiya rejimi (Firebase Auth cheklangan)
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-4">
           <div className="text-right hidden sm:block">
-            <p className="text-xs font-bold text-primary">{profile?.nickname || 'Anonim'}</p>
-            <p className="text-[10px] text-on-surface-variant">{profile?.role === 'admin' ? 'Administrator' : 'Foydalanuvchi'}</p>
+            <p className={cn(
+              "text-xs font-bold",
+              isAdmin ? "text-[#3c2a4d]" : "text-primary"
+            )}>{profile?.nickname || 'Anonim'}</p>
+            <p className={cn(
+              "text-[10px]",
+              isAdmin ? "text-gray-400" : "text-on-surface-variant"
+            )}>{profile?.role === 'admin' ? 'Administrator' : 'Foydalanuvchi'}</p>
           </div>
-          <div className="w-10 h-10 bg-surface-container-highest rounded-full flex items-center justify-center text-primary">
+          <div className={cn(
+            "w-10 h-10 rounded-full flex items-center justify-center",
+            isAdmin ? "bg-gray-100 text-gray-400" : "bg-surface-container-highest text-primary"
+          )}>
             <UserIcon size={20} />
           </div>
         </div>
@@ -318,9 +325,9 @@ export default function App() {
         <motion.div 
           animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center"
+          className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center"
         >
-          <Wind className="text-primary" size={32} />
+          <Logo className="text-primary" size={48} />
         </motion.div>
       </div>
     );

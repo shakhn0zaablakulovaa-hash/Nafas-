@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, User, setPersistence, browserLocalPersistence, signInWithPhoneNumber, RecaptchaVerifier, ConfirmationResult } from "firebase/auth";
+import { getAuth, signInAnonymously, onAuthStateChanged, User, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, increment, getDoc, setDoc } from "firebase/firestore";
 import { useState, useEffect, createContext, useContext } from "react";
 import { UserProfile } from "../types";
@@ -13,7 +13,7 @@ export const auth = getAuth(app);
 setPersistence(auth, browserLocalPersistence).catch(err => console.error("Persistence error", err));
 
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
-export const googleProvider = new GoogleAuthProvider();
+// googleProvider removed as requested to remove Google Sign-In
 
 export enum OperationType {
   CREATE = 'create',
@@ -72,7 +72,6 @@ interface AuthContextType {
   loading: boolean;
   isSigningIn: boolean;
   signIn: () => Promise<void>;
-  signInWithPhone: (phoneNumber: string, recaptchaContainerId: string) => Promise<ConfirmationResult>;
   signOut: () => Promise<void>;
   completeProfile: (data: Partial<UserProfile>) => Promise<void>;
 }
@@ -86,9 +85,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   useEffect(() => {
-    return onAuthStateChanged(auth, async (user) => {
-      setUser(user);
+    // Check for mock user in localStorage first
+    const savedMockUser = localStorage.getItem('nafas_mock_user');
+    if (savedMockUser) {
+      const mockUserData = JSON.parse(savedMockUser);
+      setUser(mockUserData as User);
+      const savedProfile = localStorage.getItem('nafas_mock_profile');
+      if (savedProfile) {
+        setProfile(JSON.parse(savedProfile));
+      }
+      setLoading(false);
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        setUser(user);
         const docRef = doc(db, "users", user.uid);
         try {
           const docSnap = await getDoc(docRef);
@@ -100,23 +111,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
           handleFirestoreError(error, OperationType.GET, `users/${user.uid}`);
         }
-      } else {
+      } else if (!localStorage.getItem('nafas_mock_user')) {
+        setUser(null);
         setProfile(null);
       }
       setLoading(false);
     });
+
+    return () => unsubscribe();
   }, []);
 
   const signIn = async () => {
     if (isSigningIn) return;
     setIsSigningIn(true);
     try {
-      await signInWithPopup(auth, googleProvider);
+      await signInAnonymously(auth);
     } catch (error: any) {
-      if (error.code === 'auth/cancelled-popup-request') {
-        console.warn("Sign-in popup was cancelled by a subsequent request.");
-      } else if (error.code === 'auth/popup-closed-by-user') {
-        console.warn("Sign-in popup was closed by the user.");
+      if (error.code === 'auth/admin-restricted-operation') {
+        console.warn("Anonymous auth disabled in console. Using simulated session.");
+        const mockUid = 'sim_' + Math.random().toString(36).substr(2, 9);
+        const mockUser = {
+          uid: mockUid,
+          isAnonymous: true,
+          displayName: 'Foydalanuvchi',
+        } as User;
+        setUser(mockUser);
+        localStorage.setItem('nafas_mock_user', JSON.stringify(mockUser));
       } else {
         console.error("Sign in error", error);
       }
@@ -125,25 +145,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signInWithPhone = async (phoneNumber: string, recaptchaContainerId: string) => {
-    const recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainerId, {
-      size: 'invisible',
-    });
-    return signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-  };
-
   const completeProfile = async (data: Partial<UserProfile>) => {
     if (!user) return;
     const newProfile: UserProfile = {
       uid: user.uid,
-      displayName: user.displayName || "Foydalanuvchi",
+      displayName: "Foydalanuvchi",
       nickname: data.nickname || "Anonim",
       role: data.role || 'user',
       region: data.region || 'Toshkent',
-      phoneNumber: user.phoneNumber || data.phoneNumber || "",
+      phoneNumber: "",
       createdAt: serverTimestamp(),
       ...data
     };
+    
+    if (user.uid.startsWith('sim_')) {
+      setProfile(newProfile);
+      localStorage.setItem('nafas_mock_profile', JSON.stringify(newProfile));
+      return;
+    }
+
     try {
       await setDoc(doc(db, "users", user.uid), newProfile);
       setProfile(newProfile);
@@ -154,10 +174,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await auth.signOut();
+    localStorage.removeItem('nafas_mock_user');
+    localStorage.removeItem('nafas_mock_profile');
+    setUser(null);
+    setProfile(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, isSigningIn, signIn, signInWithPhone, signOut, completeProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, isSigningIn, signIn, signOut, completeProfile }}>
       {children}
     </AuthContext.Provider>
   );
